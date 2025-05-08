@@ -47,7 +47,7 @@
         author: "Ramesh S., Baneshwor"
       },
       {
-        quote: "Earning 50% more since joining SewaKo. Clients come to me now!",
+        quote: "Earning 50% more since joining MarketPlace. Clients come to me now!",
         author: "Sunita M., Electrician"
       }
     ];
@@ -57,7 +57,7 @@
     <!-- Navigation with Nepali touch -->
     <nav class="container mx-auto px-4 py-3 flex justify-between items-center border-b">
       <div class="flex items-center">
-        <span class="text-2xl font-bold text-red-600">SewaKo</span>
+        <span class="text-2xl font-bold text-red-600">MarketPlace</span>
         <span class="ml-2 text-xs bg-red-100 text-red-600 px-2 py-1 rounded">नेपाल</span>
       </div>
       <div class="hidden md:flex space-x-1">
@@ -148,7 +148,7 @@
   
     <!-- How It Works -->
     <div class="container mx-auto px-4 py-16">
-      <h2 class="text-2xl font-bold text-center mb-2">How SewaKo Works</h2>
+      <h2 class="text-2xl font-bold text-center mb-2">How MarketPlace Works</h2>
       <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">
         Simple steps to get your problems solved or earn money
       </p>
@@ -186,7 +186,7 @@
         
         <!-- Benefits -->
         <div class="bg-red-600 text-white p-6 rounded-xl shadow-sm">
-          <h3 class="font-bold text-lg mb-4">Why Choose SewaKo?</h3>
+          <h3 class="font-bold text-lg mb-4">Why Choose MarketPlace?</h3>
           <ul class="space-y-3 text-sm">
             <li class="flex items-start">
               <svg class="w-4 h-4 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -238,7 +238,7 @@
       <div class="container mx-auto px-4 text-center">
         <h2 class="text-2xl md:text-3xl font-bold mb-4">Ready to Solve or Get Work?</h2>
         <p class="text-lg mb-8 max-w-2xl mx-auto">
-          Join thousands of Nepalis using SewaKo for their daily service needs
+          Join thousands of Nepalis using MarketPlace for their daily service needs
         </p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
           <button 
@@ -263,7 +263,7 @@
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <div class="text-xl font-bold mb-4 flex items-center">
-              <span>SewaKo</span>
+              <span>MarketPlace</span>
               <span class="ml-2 text-xs bg-gray-700 px-2 py-1 rounded">नेपाली</span>
             </div>
             <p class="text-gray-400 text-sm">
@@ -291,12 +291,12 @@
             <ul class="space-y-2 text-sm text-gray-400">
               <li>Kathmandu, Nepal</li>
               <li>+977 98XXXXXXXX</li>
-              <li>hello@sewako.com</li>
+              <li>hello@MarketPlace.com</li>
             </ul>
           </div>
         </div>
         <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-400">
-          &copy; {new Date().getFullYear()} SewaKo. All rights reserved.
+          &copy; {new Date().getFullYear()} MarketPlace. All rights reserved.
         </div>
       </div>
     </footer>

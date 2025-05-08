@@ -9,7 +9,7 @@
    const { title, description, price, imageUrl } = servicePost;
   </script>
   
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden">
+  <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition overflow-hidden hover:scale-105 cursor-pointer">
     <img class="w-full h-44 object-cover" src={imageUrl} alt={title} />
   
     <div class="p-4">
@@ -19,7 +19,7 @@
       <div class="mt-4 flex justify-between items-center">
         <span class="text-red-600 font-bold">Rs. {price}</span>
         <button class="bg-red-600 text-white text-sm px-4 py-2 rounded-md hover:bg-red-700 transition">
-          Book Now
+          Bid Now
         </button>
       </div>
     </div>
