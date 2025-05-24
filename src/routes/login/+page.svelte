@@ -1,10 +1,32 @@
 <script lang="ts">
+    import { goto } from "$app/navigation";
+    import { freelanceAxios } from "$lib/action/axios.service";
+    import { browser } from '$app/environment';
+
+
     let email = '';
     let password = '';
   
-    const handleLogin = () => {
-      console.log({ email, password });
+    const handleLogin = async () => {
+      try {
+        const response = await freelanceAxios.post("/login", {
+          email,
+          password
+        });
+        console.log(response.data.token);
+        if(response.data.success){
+          if(browser){
+           console.log("browser")
+            localStorage.setItem("token", response.data.token);
+          }
+          goto("/dashboard")
+        }
+      } catch (error) {
+        console.log(error);
+      }
     };
+
+    
   </script>
   
   <section class="min-h-screen flex items-center justify-center bg-gray-100">

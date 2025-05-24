@@ -1,30 +1,60 @@
 <script lang="ts">
     import AddressAutocomplete from '$lib/component/autoCompleteAddress.svelte';
+    import { freelanceAxios } from '$lib/action/axios.service';
+    import { goto } from '$app/navigation';
   
     let description = '';
     let address = '';
     let location: any = null;
     let phone = '';
     let category = '';
+    let urgency = '';
+    let title = '';
+    let price = 0;
+    let showSuggestions = true;
+    let locationSuggestions: string[] = [];
     const categories = ['Plumber', 'Electrician', 'Carpenter', 'Mechanic'];
   
-    function handleSubmit(event: Event) {
+   async function handleSubmit(event: Event) {
       event.preventDefault();
       const data = {
+        title,
         description,
         address,
         location,
         phone,
-        category
+        category,
+        urgency,
+        price
       };
+      const response = await freelanceAxios.post("/post", data);
+      if(response.data.success){
+        goto("/dashboard");
+      }
   
-      console.log('Form submitted:', data);
+   
     }
   
-    function handleAddressSelect(event: CustomEvent<{ address: string; location: any }>) {
-      address = event.detail.address;
-      location = event.detail.location;
+    const selectLocation = (loc: string) => {
+    location = loc;
+    showSuggestions = false;
+    locationSuggestions = [];
+  };
+
+  const fetchLocationRecommendations = async (location: string) => {
+    try {
+      const response = await freelanceAxios.post(`/get-suggest-location/${location}`);
+      locationSuggestions = response.data;
+    } catch (error) {
+      console.log(error);
     }
+  };
+
+  $: if (location) {
+    showSuggestions = true;
+    locationSuggestions = [];
+    fetchLocationRecommendations(location);
+  }
   </script>
   
   <section class="min-h-screen flex items-center justify-center bg-gray-100">
@@ -32,6 +62,16 @@
       <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Create Service Post</h2>
   
       <form on:submit|preventDefault={handleSubmit} class="space-y-5">
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700">Title</label>
+          <input
+            bind:value={title}
+            required
+            placeholder="Title"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+        </div>
+
         <div>
           <label class="block mb-1 text-sm font-medium text-gray-700">Description</label>
           <textarea
@@ -42,12 +82,41 @@
             class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
           ></textarea>
         </div>
+
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700">Price</label>
+          <input
+            bind:value={price}
+            required
+            placeholder="Price"
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
+        </div>
+        
   
         <div>
-          <label class="block mb-1 text-sm font-medium text-gray-700">Address</label>
-          <AddressAutocomplete on:select={handleAddressSelect} />
-          {#if address}
-            <p class="mt-1 text-sm text-gray-500">{address}</p>
+          <label class="block mb-1 text-sm font-medium text-gray-700"
+            >Location</label
+          >
+          <input
+            type="text"
+            bind:value={location}
+            required
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          {#if (showSuggestions && locationSuggestions.length && location) }
+            <ul
+              class="mt-1 border rounded-md bg-white shadow-md max-h-40 overflow-auto"
+            >
+              {#each locationSuggestions as loc}
+                <li
+                  class="px-4 py-2 hover:bg-blue-100 cursor-pointer"
+                  on:click={() => selectLocation(loc)}
+                >
+                  {loc}
+                </li>
+              {/each}
+            </ul>
           {/if}
         </div>
   
@@ -61,6 +130,19 @@
             pattern="[0-9+()\- ]{7}"
             class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
           />
+        </div>
+        <div> 
+          <label class="block mb-1 text-sm font-medium text-gray-700">Urgency</label>
+          <select
+            bind:value={urgency}
+            required
+            class="w-full px-4 py-2 border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
+          >
+            <option value="" disabled selected>Select urgency</option>
+            <option value="immediate"> IMMEDIATE</option>
+            <option value="moderate">MODERATE</option>
+            <option value="low">LOW</option>
+          </select>
         </div>
   
         <div>

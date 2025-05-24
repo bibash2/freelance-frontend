@@ -1,82 +1,100 @@
 <script lang="ts">
     import ServiceCard from '$lib/component/servicePost.svelte';
+    import { goto } from '$app/navigation';
     import ServiceProviderProfile from '$lib/component/serviceProviderProfile.svelte';
     let viewByMe=true;
+
+    const showPostDetails = (item: any) => {
+    console.log(item)
+    goto('/dashboard/post/'+item.id)
+  };
     const services = [
-      {
-        title: 'Electrician for Home Repairs',
-        description: 'Fixing lights, sockets, and wiring in Kathmandu area.',
-        price: '1500',
-        imageUrl: 'https://source.unsplash.com/400x300/?electrician,tools',
-      },
-      {
-        title: 'Plumber Service',
-        description: 'Leak fixes, pipe installation, and bathroom fitting support.',
-        price: '1200',
-        imageUrl: 'https://source.unsplash.com/400x300/?plumber,water',
-      },
-      {
-        title: 'House Cleaning',
-        description: 'Deep cleaning services available in Lalitpur and Bhaktapur.',
-        price: '1000',
-        imageUrl: 'https://source.unsplash.com/400x300/?cleaning,home',
-      },
-      {
-        title: 'Electrician for Home Repairs',
-        description: 'Fixing lights, sockets, and wiring in Kathmandu area.',
-        price: '1500',
-        imageUrl: 'https://source.unsplash.com/400x300/?electrician,tools',
-      },
-      {
-        title: 'Plumber Service',
-        description: 'Leak fixes, pipe installation, and bathroom fitting support.',
-        price: '1200',
-        imageUrl: 'https://source.unsplash.com/400x300/?plumber,water',
-      },
-      {
-        title: 'House Cleaning',
-        description: 'Deep cleaning services available in Lalitpur and Bhaktapur.',
-        price: '1000',
-        imageUrl: 'https://source.unsplash.com/400x300/?cleaning,home',
-      },
-      {
-        title: 'Electrician for Home Repairs',
-        description: 'Fixing lights, sockets, and wiring in Kathmandu area.',
-        price: '1500',
-        imageUrl: 'https://source.unsplash.com/400x300/?electrician,tools',
-      },
-      {
-        title: 'Plumber Service',
-        description: 'Leak fixes, pipe installation, and bathroom fitting support.',
-        price: '1200',
-        imageUrl: 'https://source.unsplash.com/400x300/?plumber,water',
-      },
-      {
-        title: 'House Cleaning',
-        description: 'Deep cleaning services available in Lalitpur and Bhaktapur.',
-        price: '1000',
-        imageUrl: 'https://source.unsplash.com/400x300/?cleaning,home',
-      },
-      {
-        title: 'Electrician for Home Repairs',
-        description: 'Fixing lights, sockets, and wiring in Kathmandu area.',
-        price: '1500',
-        imageUrl: 'https://source.unsplash.com/400x300/?electrician,tools',
-      },
-      {
-        title: 'Plumber Service',
-        description: 'Leak fixes, pipe installation, and bathroom fitting support.',
-        price: '1200',
-        imageUrl: 'https://source.unsplash.com/400x300/?plumber,water',
-      },
-      {
-        title: 'House Cleaning',
-        description: 'Deep cleaning services available in Lalitpur and Bhaktapur.',
-        price: '1000',
-        imageUrl: 'https://source.unsplash.com/400x300/?cleaning,home',
-      },
-      // Add more services as needed
-    ];
+  {
+    id: 1,
+    title: 'Electrician for Home Repairs',
+    description: 'Fixing lights, sockets, and wiring in Kathmandu area.',
+    price: '1500',
+    imageUrl: 'https://source.unsplash.com/400x300/?electrician,tools',
+  },
+  {
+    id: 2,
+    title: 'Plumber Service',
+    description: 'Leak fixes, pipe installation, and bathroom fitting support.',
+    price: '1200',
+    imageUrl: 'https://source.unsplash.com/400x300/?plumber,water',
+  },
+  {
+    id: 3,
+    title: 'House Cleaning',
+    description: 'Deep cleaning services available in Lalitpur and Bhaktapur.',
+    price: '1000',
+    imageUrl: 'https://source.unsplash.com/400x300/?cleaning,home',
+  },
+  {
+    id: 4,
+    title: 'Electrician for Home Repairs',
+    description: 'Fixing lights, sockets, and wiring in Kathmandu area.',
+    price: '1500',
+    imageUrl: 'https://source.unsplash.com/400x300/?electrician,tools',
+  },
+  {
+    id: 5,
+    title: 'Plumber Service',
+    description: 'Leak fixes, pipe installation, and bathroom fitting support.',
+    price: '1200',
+    imageUrl: 'https://source.unsplash.com/400x300/?plumber,water',
+  },
+  {
+    id: 6,
+    title: 'House Cleaning',
+    description: 'Deep cleaning services available in Lalitpur and Bhaktapur.',
+    price: '1000',
+    imageUrl: 'https://source.unsplash.com/400x300/?cleaning,home',
+  },
+  {
+    id: 7,
+    title: 'Electrician for Home Repairs',
+    description: 'Fixing lights, sockets, and wiring in Kathmandu area.',
+    price: '1500',
+    imageUrl: 'https://source.unsplash.com/400x300/?electrician,tools',
+  },
+  {
+    id: 8,
+    title: 'Plumber Service',
+    description: 'Leak fixes, pipe installation, and bathroom fitting support.',
+    price: '1200',
+    imageUrl: 'https://source.unsplash.com/400x300/?plumber,water',
+  },
+  {
+    id: 9,
+    title: 'House Cleaning',
+    description: 'Deep cleaning services available in Lalitpur and Bhaktapur.',
+    price: '1000',
+    imageUrl: 'https://source.unsplash.com/400x300/?cleaning,home',
+  },
+  {
+    id: 10,
+    title: 'Electrician for Home Repairs',
+    description: 'Fixing lights, sockets, and wiring in Kathmandu area.',
+    price: '1500',
+    imageUrl: 'https://source.unsplash.com/400x300/?electrician,tools',
+  },
+  {
+    id: 11,
+    title: 'Plumber Service',
+    description: 'Leak fixes, pipe installation, and bathroom fitting support.',
+    price: '1200',
+    imageUrl: 'https://source.unsplash.com/400x300/?plumber,water',
+  },
+  {
+    id: 12,
+    title: 'House Cleaning',
+    description: 'Deep cleaning services available in Lalitpur and Bhaktapur.',
+    price: '1000',
+    imageUrl: 'https://source.unsplash.com/400x300/?cleaning,home',
+  },
+];
+
   
 </script>
 
@@ -85,7 +103,7 @@
     <div class="max-w-7xl mx-auto">
         <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
             {#each services as service}
-                <ServiceCard {...service} />
+                <ServiceCard {...service}on:click={() => showPostDetails(service.id)} />
             {/each}
         </div>
     </div>

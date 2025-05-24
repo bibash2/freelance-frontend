@@ -1,12 +1,13 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
-    import toast from '$lib/component/toast.svelte'
-    const user = true;
+    import { browser } from '$app/environment';
+    const isLogin = browser ? localStorage.getItem("token") : false;
     
 
     const handleFindHelp = ()=>{
         try {
-           if(user){
+          console.log(isLogin)
+           if(isLogin){
             goto('/dashboard');
            }else{
             goto('/register');
@@ -18,7 +19,7 @@
 
     const handleOfferService = ()=>{
         try {
-            if(user){
+            if(isLogin){
                 goto('/dashboard');
             }else{
                 goto('/register');

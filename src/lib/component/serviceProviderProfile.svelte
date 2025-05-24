@@ -1,13 +1,30 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
     export let name: string;
     export let category: string;
     export let location: string;
     export let phone: string;
     export let bio: string;
     export let profileImage: string;
+    export let id: number;
+
+    const dispatch = createEventDispatcher();
+
+    const handleClick = () => {
+      dispatch('click', { 
+        id,
+        name,
+        category,
+        location,
+        phone,
+        bio,
+        profileImage
+      });
+    };
   </script>
   
-  <div class="bg-white rounded-lg shadow hover:shadow-lg border border-red-100 transition p-5 hover:scale-105 cursor-pointer">
+  <div class="bg-white rounded-lg shadow hover:shadow-lg border border-red-100 transition p-5 hover:scale-105 cursor-pointer"
+  on:click={handleClick}>
     <div class="flex items-center space-x-4 mb-4">
       <img
         src={profileImage}

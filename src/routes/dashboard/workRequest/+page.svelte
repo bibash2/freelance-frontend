@@ -1,6 +1,7 @@
 <script lang="ts">  
 import WorkForCall from '$lib/component/workForCall.svelte';
 let requestByMe=true;
+import { goto } from '$app/navigation';
 export const workCallsToMe = [
   {
     id: 1,
@@ -98,13 +99,13 @@ const workCallsByMe = [
        {#if requestByMe}
       <div class="grid gap-6 sm:grid-cols-8 lg:grid-cols-3">
         {#each workCallsByMe as call (call.id)}
-          <WorkForCall {...call} type="requestedByMe" />
+          <WorkForCall {...call} type="requestedByMe" on:click={() => goto(`/dashboard/workRequest/${call.id+"_"+"requestedByMe"}`)}/>
         {/each}
       </div>
       {:else}
       <div class="grid gap-6 sm:grid-cols-8 lg:grid-cols-3">
         {#each workCallsToMe as call (call.id)}
-        <WorkForCall {...call} type="requestedToMe" />
+        <WorkForCall {...call} type="requestedToMe"  on:click={() => goto(`/dashboard/workRequest/${call.id+"_"+"requestedToMe"}`)}/>
         {/each}
       </div>
       {/if}

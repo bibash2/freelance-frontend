@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { browser } from '$app/environment';
+  import { createEventDispatcher } from 'svelte';
     export let fromName: string;
     export let message: string;
     export let phone: string;
@@ -8,7 +10,12 @@
     export let isOnline: boolean = false;
     export let isNew: boolean = true;
     export let type: string = 'requestedByMe';
+    const dispatch = createEventDispatcher();
+    const currentUserId = browser ? localStorage.getItem("userId") : null;
   
+    const handleClick = () => {
+      dispatch('click');
+    };
     // Dynamic color classes based on type
     let colorClasses = {
       bgFrom: 'from-white',
@@ -36,11 +43,13 @@
           bg: 'bg-red-100'
         };
       }
+
       // Add more types as needed
     }
   </script>
   
-  <div class={`rounded-xl bg-gradient-to-br ${colorClasses.bgFrom} ${colorClasses.bgTo} border ${colorClasses.border} shadow-sm hover:shadow-md transition-all duration-300 p-6 transform hover:-translate-y-1 hover:cursor-pointer`}>
+  <div class={`rounded-xl bg-gradient-to-br ${colorClasses.bgFrom} ${colorClasses.bgTo} border ${colorClasses.border} shadow-sm hover:shadow-md transition-all duration-300 p-6 transform hover:-translate-y-1 hover:cursor-pointer`}
+  on:click={handleClick}>
     <div class="flex items-start gap-4 h-full">
       <!-- Avatar with status indicator -->
       <div class="relative flex-shrink-0">

@@ -39,7 +39,7 @@
   let user = {
     name: 'John Doe',
     email: 'john@example.com',
-    avatar: '/user-avatar.jpg',
+    avatar: '',
     phone: '+1 (555) 123-4567'
   };
   
@@ -87,9 +87,9 @@
           <a
             href={route.path}
             class="relative group px-4 py-2 rounded-lg text-sm font-medium flex items-center transition-colors
-              {($page.url.pathname === route.path || $page.url.pathname.startsWith(route.path + '/'))
-                ? 'text-red-600 bg-red-50'
-                : 'text-black hover:text-red-600 hover:bg-red-50'}"
+              {$page.url.pathname === route.path 
+                ? 'text-red-600 border-b-2 border-red-600'
+                : 'text-gray-600 hover:text-red-600'}"
             title={route.description}
           >
             <span class="mr-2 text-lg">{route.icon}</span>
@@ -179,9 +179,9 @@
         {#each routes as route}
           <a
             href={route.path}
-            class="{($page.url.pathname === route.path || $page.url.pathname.startsWith(route.path + '/'))
-              ? 'bg-red-50 text-red-600'
-              : 'text-gray-700 hover:bg-gray-50'} 
+            class="{$page.url.pathname === route.path
+              ? 'text-red-600 border-l-4 border-red-600'
+              : 'text-gray-700'} 
               block px-3 py-2 rounded-md text-base font-medium flex items-center"
           >
             <span class="mr-3 text-lg">{route.icon}</span>

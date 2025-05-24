@@ -2,15 +2,20 @@
   import { goto } from "$app/navigation";
   import ServiceCard from "$lib/component/servicePost.svelte";
   import ServiceProviderProfile from "$lib/component/serviceProviderProfile.svelte";
-  import DetailView from "$lib/component/DetailView.svelte";
+  import DetailView from "$lib/component/PostDetail.svelte";
   let viewAllPosts = true;
   import plumberImg from './plumber.png';
   import painterImg from './painter.png';
   import hairDresserImg from './hairdresser.png';
   let selectedItem: any;
   
-  const showDetails = (item: any) => {
-    selectedItem = item;
+  const showPostDetails = (id: string) => {
+    console.log(id)
+    goto('/dashboard/post/'+id)
+  };
+
+  const showServiceProviderDetails = (id: string) => {
+    goto('/dashboard/serviceProvider/'+id)
   };
 
 
@@ -229,22 +234,19 @@
     </button>
     </div>
 
-    {#if selectedItem}
-    <!-- Show detailed view -->
-    <DetailView item={selectedItem}/>
-  {:else}
+   
     <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
       {#if viewAllPosts}
         {#each services as service (service.id)}
-          <ServiceCard {...service} on:click={() => showDetails(service)} />
+        {console.log(service)}
+          <ServiceCard {...service} on:click={() => showPostDetails(service.id)} />
         {/each}
       {:else}
         {#each serviceProviders as provider (provider.id)}
-          <ServiceProviderProfile {...provider} on:click={() => showDetails(provider)} />
+          <ServiceProviderProfile {...provider} on:click={() => showServiceProviderDetails(provider.id)} />
         {/each}
       {/if}
     </div>
-  {/if}
    
   </div>
 </section>
