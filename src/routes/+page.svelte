@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { browser } from '$app/environment';
+    import { onMount } from 'svelte';
     const isLogin = browser ? localStorage.getItem("token") : false;
     
 
@@ -52,6 +53,10 @@
         author: "Sunita M., Electrician"
       }
     ];
+
+    onMount(() => {
+      console.log(isLogin)
+    });
   </script>
   
   <section class="bg-white text-gray-800 font-sans">

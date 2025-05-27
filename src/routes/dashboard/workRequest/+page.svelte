@@ -1,84 +1,53 @@
 <script lang="ts">  
 import WorkForCall from '$lib/component/workForCall.svelte';
-let requestByMe=true;
+let requestByMe=$state(true);
 import { goto } from '$app/navigation';
-export const workCallsToMe = [
-  {
-    id: 1,
-    fromName: 'Ada Obi',
-    message: 'Hi, I need a plumber urgently for a leaking pipe in Ikeja. Can you come today?',
-    phone: '+234 701 222 3344',
-    email: 'ada.obi@example.com',
-    time: '10 mins ago',
-    consumerAvatar: 'https://randomuser.me/api/portraits/women/45.jpg'
-  },
-  {
-    id: 2,
-    fromName: 'Michael Yusuf',
-    message: 'I have a lighting issue in my apartment. Can you check it this evening?',
-    phone: '+234 803 888 1122',
-    email: '',
-    time: '30 mins ago',
-    consumerAvatar: 'https://randomuser.me/api/portraits/men/38.jpg'
-  },
-  {
-    id: 3,
-    fromName: 'Ngozi Okafor',
-    message: 'Looking for a carpenter to repair my wardrobe. Send your price estimate.',
-    phone: '+234 805 442 8899',
-    email: 'ngozi.okafor@gmail.com',
-    time: '1 hour ago',
-    consumerAvatar: 'https://randomuser.me/api/portraits/women/52.jpg'
-  },
-  {
-    id: 4,
-    fromName: 'Tunde Balogun',
-    message: 'Need urgent AC servicing before tomorrow. Can you do it?',
-    phone: '+234 806 123 0098',
-    email: '',
-    time: '2 hours ago',
-    consumerAvatar: 'https://randomuser.me/api/portraits/men/41.jpg'
-  },
-  {
-    id: 5,
-    fromName: 'Aisha Bello',
-    message: 'Hello, I saw your profile on WorkConnect. I need house cleaning this weekend.',
-    phone: '+234 809 321 7766',
-    email: 'aisha.bello@email.com',
-    time: 'Yesterday',
-    consumerAvatar: 'https://randomuser.me/api/portraits/women/29.jpg'
-  }
-];
+import { freelanceAxios } from '$lib/action/axios.service';
+import { onMount } from 'svelte';
+import { browser } from '$app/environment';
+let userDetail: any = $state();
 
-const workCallsByMe = [
-  {
-    id: 1,
-    fromName: 'Ada Obi',
-    message: 'Hi, I need a plumber urgently for a leaking pipe in Ikeja. Can you come today?',
-    phone: '+234 701 222 3344',
-    email: 'ada.obi@example.com',
-    time: '10 mins ago',
-    consumerAvatar: 'https://randomuser.me/api/portraits/women/45.jpg'
-  },
-  {
-    id: 2,
-    fromName: 'Michael Yusuf',
-    message: 'I have a lighting issue in my apartment. Can you check it this evening?',
-    phone: '+234 803 888 1122',
-    email: '',
-    time: '30 mins ago',
-    consumerAvatar: 'https://randomuser.me/api/portraits/men/38.jpg'
-  },
-  {
-    id: 3,
-    fromName: 'Ngozi Okafor',
-    message: 'Looking for a carpenter to repair my wardrobe. Send your price estimate.',
-    phone: '+234 805 442 8899',
-    email: 'ngozi.okafor@gmail.com',
-    time: '1 hour ago',
-    consumerAvatar: 'https://randomuser.me/api/portraits/women/52.jpg'
+onMount(async () => {
+    if (browser) {
+      userDetail = JSON.parse(localStorage.getItem("userDetail") || "{}");
+    }
+});
+
+let workCallsByMe = $state([]);
+let workCallsToMe = $state([]);
+
+const handleByMe = async () => {
+  requestByMe = true;
+  const endPoint = "/work-request/by-me";
+  const response = await freelanceAxios.get(endPoint);
+  workCallsByMe = response.data;
+}
+
+const handleToMe = async () => {
+  requestByMe = false;
+  const endPoint = "/work-request/to-me";
+  const response = await freelanceAxios.get(endPoint);
+  workCallsToMe = response.data;
+}
+
+onMount(async () => {
+  const endPoint = requestByMe? "/work-request/by-me": "/work-request/to-me";
+  const response = await freelanceAxios.get(endPoint);
+  if(requestByMe){
+    workCallsByMe = response.data;
+  }else{
+    workCallsToMe = response.data;
   }
-];
+});
+
+const handleWorkRequestClick = (call: any, type: string) => {
+
+    // Convert the data to base64 to safely pass it in URL
+    console.log(call,"call");
+    const encodedData = btoa(JSON.stringify(call.user));
+    
+    goto(`/dashboard/workRequest/${call.id}_${type}?data=${encodedData}`);
+};
 
 </script>
 
@@ -86,28 +55,39 @@ const workCallsByMe = [
     <div class="max-w-7xl mx-auto">
       <h2 class="text-2xl font-bold text-gray-800 mb-6">Direct Work Requests 
         <button 
-        class="px-1 py-1 text-white bg-green-600 rounded-md hover:bg-green-700 transition"
-        on:click={() => requestByMe = true}>
+        class="px-1 py-1 text-white bg-green-600 rounded-md hover:bg-green-700 transition cursor-pointer"
+        onclick={() => handleByMe()}>
           By Me
         </button>
-        <button class="px-1 py-1 text-white bg-red-600 rounded-md hover:bg-red-700 transition"
-        on:click={() => requestByMe = false}>
+        {#if userDetail?.role.includes("SERVICE_PROVIDER")}
+        <button class="px-1 py-1 text-white bg-red-600 rounded-md hover:bg-red-700 transition cursor-pointer"
+        onclick={() => handleToMe()}>
           To Me
         </button>
+        {/if}
       </h2>
       <!-- Grid layout -->
-       {#if requestByMe}
+      {#if requestByMe}
       <div class="grid gap-6 sm:grid-cols-8 lg:grid-cols-3">
         {#each workCallsByMe as call (call.id)}
-          <WorkForCall {...call} type="requestedByMe" on:click={() => goto(`/dashboard/workRequest/${call.id+"_"+"requestedByMe"}`)}/>
+          <WorkForCall
+            {...call}
+            type="requestedByMe"
+            on:click={() => handleWorkRequestClick(call, 'requestedByMe')}
+          />
         {/each}
       </div>
-      {:else}
+    {:else}
+    {console.log(requestByMe,"workCallsToMe")}
       <div class="grid gap-6 sm:grid-cols-8 lg:grid-cols-3">
         {#each workCallsToMe as call (call.id)}
-        <WorkForCall {...call} type="requestedToMe"  on:click={() => goto(`/dashboard/workRequest/${call.id+"_"+"requestedToMe"}`)}/>
+          <WorkForCall
+            {...call}
+            type="requestedToMe"
+            on:click={() => handleWorkRequestClick(call, 'requestedToMe')}
+          />
         {/each}
       </div>
-      {/if}
+    {/if}
     </div>
   </section>

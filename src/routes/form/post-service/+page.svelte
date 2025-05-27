@@ -27,8 +27,8 @@
         urgency,
         price
       };
-      const response = await freelanceAxios.post("/post", data);
-      if(response.data.success){
+      const response = await freelanceAxios.post("/create-post", data);
+      if(response.data){
         goto("/dashboard");
       }
   

@@ -6,18 +6,13 @@
 
     let email = '';
     let password = '';
-  
-    const handleLogin = async () => {
+    const getFullUserDetail = async () => {
       try {
-        const response = await freelanceAxios.post("/login", {
-          email,
-          password
-        });
-        console.log(response.data.token);
-        if(response.data.success){
+        const response = await freelanceAxios.get("/user");
+        console.log(response.data);
+        if(response.data){
           if(browser){
-           console.log("browser")
-            localStorage.setItem("token", response.data.token);
+            localStorage.setItem("userDetail", JSON.stringify(response.data));
           }
           goto("/dashboard")
         }
@@ -25,6 +20,29 @@
         console.log(error);
       }
     };
+
+
+    const handleLogin = async () => {
+      try {
+        const response = await freelanceAxios.post("/login", {
+          email,
+          password
+        });
+        console.log(response.data)
+        if(response.data.success){
+
+          if(browser){
+            localStorage.setItem("token", response.data.token);
+          }
+          goto("/dashboard")
+        }
+        getFullUserDetail();
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+
 
     
   </script>

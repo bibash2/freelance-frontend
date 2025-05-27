@@ -2,6 +2,16 @@
     import { goto } from '$app/navigation';
   let { children } = $props();
   import { page } from '$app/stores';
+    import Button from '$lib/component/button.svelte';
+    import { freelanceAxios } from '$lib/action/axios.service';
+    import { browser } from '$app/environment';
+    const handleLogout = () => {
+      console.log("logout ========================>>>>>>>>>>>>>>>>>>>>>>>>>");
+      if(browser){
+        localStorage.clear();
+        goto("/");
+      }
+    }
   
   const routes = [
     {
@@ -36,12 +46,7 @@
   let editProfileModalOpen = $state(false);
   
   // Sample user data
-  let user = {
-    name: 'John Doe',
-    email: 'john@example.com',
-    avatar: '',
-    phone: '+1 (555) 123-4567'
-  };
+  let user = browser ? JSON.parse(localStorage.getItem("userDetail") || "{}") : {};
   
   // Editable fields
   let editableUser = {
@@ -139,12 +144,12 @@
                 >
                   Register As Service Provider
                 </button>
-                <a 
-                  href="/dashboard/logout" 
+                <button 
+                  on:click={() => handleLogout()} 
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t border-gray-100"
                 >
                   Sign out
-                </a>
+                </button>
               </div>
             </div>
           {/if}

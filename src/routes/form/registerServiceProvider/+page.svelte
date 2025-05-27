@@ -2,8 +2,7 @@
     import AddressAutocomplete from '$lib/component/autoCompleteAddress.svelte';
     import { freelanceAxios } from '$lib/action/axios.service';
     import { goto } from '$app/navigation';
-  
-    let name = '';
+    import { browser } from '$app/environment';
     let category = '';
     let location = '';
     let locationCoords: any = null;
@@ -11,25 +10,25 @@
     let bio = '';
     let showSuggestions = true;
     let locationSuggestions: string[] = [];
+    let contact = '';
     const categories = ['Plumber', 'Electrician', 'Carpenter', 'Mechanic', 'Cleaner'];
   
     async function handleSubmit(event: Event) {
       event.preventDefault();
       const formData = {
-        name,
         category,
         location,
         address: locationCoords,
-        phone,
-        bio
+        bio,
+        serviceProviderContact: contact
       };
       const response = await freelanceAxios.post("/service-provider", formData);
-      if(response.data.success){
+      if(response.data){
+        if(browser){
+          localStorage.setItem("userDetail", JSON.stringify(response.data));
+        }
         goto("/dashboard")
       }
-  
-      console.log('Service provider registration:', formData);
-      // Add your API call or backend logic here
     }
   
     const selectLocation = (loc: string) => {
@@ -59,16 +58,6 @@
       <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Register as a Service Provider</h2>
   
       <form on:submit|preventDefault={handleSubmit} class="space-y-5">
-        <div>
-          <label class="block mb-1 text-sm font-medium text-gray-700">Full Name</label>
-          <input
-            type="text"
-            bind:value={name}
-            required
-            placeholder="Your full name"
-            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
-        </div>
   
         <div>
           <label class="block mb-1 text-sm font-medium text-gray-700">Category</label>
@@ -109,18 +98,7 @@
             </ul>
           {/if}
         </div>
-  
-        <div>
-          <label class="block mb-1 text-sm font-medium text-gray-700">Phone Number</label>
-          <input
-            type="tel"
-            bind:value={phone}
-            required
-            placeholder="e.g. (123) 456-7890"
-            pattern="[0-9+()\- ]{7}"
-            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
-          />
-        </div>
+
   
         <div>
           <label class="block mb-1 text-sm font-medium text-gray-700">Bio / Description</label>
@@ -131,6 +109,16 @@
             rows="4"
             class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
           ></textarea>
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700">Contact</label>
+          <input
+            bind:value={contact}
+            required
+            placeholder="Tell us about your skills, experience, and services..."
+            class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+          />
         </div>
   
         <button

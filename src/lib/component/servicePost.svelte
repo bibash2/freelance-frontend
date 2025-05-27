@@ -1,11 +1,16 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  export let title: string;
-  export let description: string;
-  export let price: string;
-  export let imageUrl: string;
-  export let id: number;
+  const props = $props()
+  const { id, title, description, price, imageUrl, userId } = props;
   const dispatch = createEventDispatcher();
+  import { browser } from '$app/environment';
+  import { onMount } from 'svelte';
+
+  let currentUserId = $state();
+
+  onMount(() => {
+    currentUserId = browser ? JSON.parse(localStorage.getItem("userDetail") || '{}').id : null;
+  })
 
 const handleClick = () => {
   dispatch('click', { 
@@ -13,14 +18,16 @@ const handleClick = () => {
     title,
     description,
     price,
-    imageUrl
+    imageUrl,
+    userId
   });
 };
+console.log(userId,"userId", currentUserId, "currentUserId")
 </script>
 
 
 <div class="relative"
-on:click={handleClick}
+onclick={handleClick}
 >
   <!-- Card Content -->
   <div
@@ -34,15 +41,17 @@ on:click={handleClick}
 
       <div class="mt-4 flex justify-between items-center">
         <span class="text-red-600 font-bold">Rs. {price}</span>
+        {#if userId !== currentUserId}
         <button
           class="bg-red-600 text-white text-sm px-4 py-2 rounded-md hover:bg-red-700 transition"
-          on:click|stopPropagation={() => {
+          onclick={() => {
             // Handle bid/booking directly here if needed
             console.log('Bid clicked for', title);
           }}
         >
           Bid Now
         </button>
+        {/if}
       </div>
     </div>
   </div>

@@ -2,12 +2,12 @@
   import { createEventDispatcher } from "svelte";
     export let name: string;
     export let category: string;
-    export let location: string;
     export let phone: string;
     export let bio: string;
     export let profileImage: string;
     export let id: number;
-
+    export let serviceProviderAddress: string;
+    export let distance: number;
     const dispatch = createEventDispatcher();
 
     const handleClick = () => {
@@ -15,10 +15,11 @@
         id,
         name,
         category,
-        location,
+        serviceProviderAddress,
         phone,
         bio,
-        profileImage
+        profileImage,
+        distance
       });
     };
   </script>
@@ -38,9 +39,10 @@
     </div>
   
     <div class="text-sm text-gray-600 space-y-2">
-      <p><strong class="text-gray-800">📍 Location:</strong> {location}</p>
+      <p><strong class="text-gray-800">📍 Location:</strong> {serviceProviderAddress}</p>
       <p><strong class="text-gray-800">📞 Phone:</strong> {phone}</p>
       <p><strong class="text-gray-800">📝 Bio:</strong> {bio}</p>
+      <p><strong class="text-gray-800">Distance:</strong> {distance.toFixed(2)} km away</p>
     </div>
   </div>
   
