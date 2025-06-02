@@ -51,7 +51,7 @@
     </div>
   {:else}
     <h2 class="text-2xl font-bold mb-2">{post.title}</h2>
-    <img src={post.imageUrl} alt={post.title} class="w-full h-64 object-cover rounded-md mb-4" />
+    <img src={post.image} alt={post.title} class="w-full h-64 object-cover rounded-md mb-4" />
     <p class="text-gray-700 mb-2">{post.description}</p>
     <p class="text-lg text-red-600 font-semibold mb-6">Budget: Rs. {post.price}</p>
 
@@ -66,12 +66,14 @@
                 <p><strong>Bid Amount:</strong> Rs. {bid.amount}</p>
                 <p><strong>Message:</strong> {bid.message}</p>
               </div>
+              {#if !post.serviceProviderId}
               <button
                 class="ml-4 px-3 py-1 text-sm font-semibold text-white bg-green-500 hover:bg-green-600 rounded"
                 on:click={() => acceptBid(bid)}
               >
                 Accept
               </button>
+              {/if}
             </div>
           </li>
         {/each}

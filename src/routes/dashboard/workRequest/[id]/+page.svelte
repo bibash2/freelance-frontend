@@ -3,6 +3,7 @@
     import { page } from '$app/stores';
     const [id, type] = $page.params.id.split("_");
     
+    
     // Get the encoded data from URL
     const urlParams = new URLSearchParams(window.location.search);
     const encodedData = urlParams.get('data');

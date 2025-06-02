@@ -113,7 +113,7 @@
             on:click={() => profileDropdownOpen = !profileDropdownOpen}
             class="flex items-center text-sm rounded-full focus:outline-none"
           >
-            <img class="h-8 w-8 rounded-full border border-gray-300" src={user.avatar} alt="User profile" />
+            <img class="h-8 w-8 rounded-full border border-gray-300" src={`${user.image}`} alt="User profile" />
           </button>
           
           <!-- Dropdown Menu -->

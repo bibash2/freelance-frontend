@@ -14,8 +14,32 @@
     let showSuggestions = true;
     let locationSuggestions: string[] = [];
     const categories = ['Plumber', 'Electrician', 'Carpenter', 'Mechanic'];
+
+    let file: File | null = null;
+    let base64Image: string | null = null;
+    let errorMessage: string | null = null;
+
+    const handleFileUpload = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+    file = target.files?.[0] ?? null;
+    
+    if (file) {
+      console.log(file)
+      const reader = new FileReader();
+      reader.onload = () => {
+        base64Image = reader.result as string;
+        console.log(base64Image, "base64Image")
+      };
+      reader.onerror = (err) => {
+        console.error('File reading error:', err);
+        errorMessage = "Failed to process image";
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
    async function handleSubmit(event: Event) {
+    
       event.preventDefault();
       const data = {
         title,
@@ -25,7 +49,8 @@
         phone,
         category,
         urgency,
-        price
+        price,
+        base64Image
       };
       const response = await freelanceAxios.post("/create-post", data);
       if(response.data){
@@ -143,6 +168,12 @@
             <option value="moderate">MODERATE</option>
             <option value="low">LOW</option>
           </select>
+        </div>
+
+        <div>
+          <label class="block mb-1 text-sm font-medium text-gray-700">Image</label>
+          <input type="file" bind:value={file} required class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+          on:change={handleFileUpload} />
         </div>
   
         <div>

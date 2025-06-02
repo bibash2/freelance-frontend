@@ -1,11 +1,9 @@
 <script lang="ts">
-
-    import { io } from 'socket.io-client';
+    import { io, type Socket } from 'socket.io-client';
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
-    let serviceProviderId = '';
     import { freelanceAxios } from '$lib/action/axios.service';
 
+    // Types
     interface Message {
         id: string;
         sender: 'provider' | 'consumer';
@@ -16,8 +14,7 @@
     interface ServiceRequest {
         title: string;
         description: string;
-        date: string;
-        time: string;
+        dateTime: string;
         address: string;
         budget?: string;
     }
@@ -34,179 +31,149 @@
         serviceRequest: ServiceRequest;
     }
 
+    interface SocketMessage {
+        type: 'chat' | 'notification' | 'system';
+        senderId: string;
+        content: string;
+        timestamp: string;
+    }
+
+    // Component state
     let workCall = $state<any | null>(null);
     let isLoading = $state(true);
     let error = $state<string | null>(null);
-
-    // export let workCall: {ss
-    //   id: string;
-    //   fromName: string;
-    //   messages: {
-    //     id: string;
-    //     sender: 'provider' | 'consumer';
-    //     text: string;
-    //     time: string;  
-    //   }[];
-    //   phone: string;
-    //   email?: string;
-    //   consumerAvatar: string;
-    //   isOnline: boolean;
-    //   status: 'pending' | 'accepted' | 'rejected' | 'completed';
-    //   serviceRequest: {
-    //     title: string;
-    //     description: string;
-    //     date: string;
-    //     time: string;
-    //     address: string;
-    //     budget?: string;
-    //   };
-    // };
-//     const workCall = {
-//   id: "12345",
-//   fromName: "John Smith",
-//   messages: [
-//     {
-//       id: "1",
-//       sender: "consumer",
-//       text: "Hello, I need help with a leaking pipe in my kitchen",
-//       time: "10:30 AM"
-//     },
-//     {
-//       id: "2",
-//       sender: "provider",
-//       text: "Hi John, I can help with that. When would be a good time?",
-//       time: "10:35 AM"
-//     },
-//     {
-//       id: "3",
-//       sender: "consumer",
-//       text: "Would tomorrow afternoon work for you? Around 2 PM?",
-//       time: "10:40 AM"
-//     }
-//   ],
-//   phone: "+234 701 234 5678",
-//   email: "john.smith@example.com",
-//   consumerAvatar: "https://randomuser.me/api/portraits/men/42.jpg",
-//   isOnline: true,
-//   status: "pending",
-//   serviceRequest: {
-//     title: "Kitchen Pipe Repair",
-//     description: "The pipe under the kitchen sink is leaking badly. Need immediate help to fix it before it causes water damage.",
-//     date: "2023-06-15",
-//     time: "2:00 PM",
-//     address: "123 Main Street, Lagos",
-//     budget: "5000"
-//   }
-// };
-  let socket: any;
-  // export let type:string;
-  const props = $props();
-  const { type, id, user } = props;
-  onMount(async () => {
-    $inspect(id,"type laksdfjahf;akjhsfafh;asdf");
-    try {
-        console.log('Received user data:', user);
-        isLoading = true;
-        const response = await freelanceAxios.get(`/work-call/${id}`);
-        workCall = response.data;
-        error = null;
-    } catch (err: unknown) {
-        error = err instanceof Error ? err.message : 'Failed to load work call details';
-    } finally {
-        isLoading = false;
-    }
-  });
-  
-    let colorClasses = {
-      bgFrom: 'from-white',
-      bgTo: 'to-red-50',
-      border: 'border-red-200',
-      text: 'text-red-600',
-      bg: 'bg-red-100',
-      gradientFrom: 'from-red-600',
-      gradientTo: 'to-red-500'
-    };
-  
-    $effect(() => {
-      if (type === 'requestedByMe') {
-        colorClasses = {
-          bgFrom: 'from-white',
-          bgTo: 'to-green-50',
-          border: 'border-green-200',
-          text: 'text-green-600',
-          bg: 'bg-green-100',
-          gradientFrom: 'from-green-600',
-          gradientTo: 'to-green-500'
-        };
-      } else {
-        colorClasses = {
-          bgFrom: 'from-white',
-          bgTo: 'to-red-50',
-          border: 'border-red-200',
-          text: 'text-red-600',
-          bg: 'bg-red-100',
-          gradientFrom: 'from-red-600',
-          gradientTo: 'to-red-500'
-        };
-      }
-    });
-  
+    let socket: Socket | null = null;
     let inputMessage = $state('');
     let isSubmitting = $state(false);
-  
-    const handleAccept = async () => {
-      isSubmitting = true;
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      workCall.status = 'accepted';
-      isSubmitting = false;
-    };
-  
-    const handleReject = async () => {
-      isSubmitting = true;
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      workCall.status = 'rejected';
-      isSubmitting = false;
-    };
+    let isConnected = $state(false);
 
-    onMount(() => {
-    // Connect to Socket.IO server
-    socket = io('http://localhost:9000');
+    // Props
+    const props = $props();
+  const { type, id, user } = props;
 
-    socket.on('connect', () => {
-      console.log('Connected with ID:', socket.id);
+    // Color classes based on type
+    let colorClasses = $state({
+        bgFrom: type === 'requestedByMe' ? 'from-white' : 'from-white',
+        bgTo: type === 'requestedByMe' ? 'to-green-50' : 'to-red-50',
+        border: type === 'requestedByMe' ? 'border-green-200' : 'border-red-200',
+        text: type === 'requestedByMe' ? 'text-green-600' : 'text-red-600',
+        bg: type === 'requestedByMe' ? 'bg-green-100' : 'bg-red-100',
+        gradientFrom: type === 'requestedByMe' ? 'from-green-600' : 'from-red-600',
+        gradientTo: type === 'requestedByMe' ? 'to-green-500' : 'to-red-500'
     });
 
-    socket.on('message', (data: any) => {
-      workCall.messages = [...workCall.messages, data];
-      
-      // Update users list for notifications
-      // if (data.type === 'notification') {
-      //   if (data.message.includes('joined')) {
-      //     users = [...users, data.message.split(' ')[1]];
-      //   } else if (data.message.includes('left')) {
-      //     users = users.filter(user => user !== data.message.split(' ')[1]);
-      //   }
-      // }
+    // Fetch work call details
+    onMount(async () => {
+        try {
+            isLoading = true;
+            const response = await freelanceAxios.get<WorkCall>(`/work-call/${id}`);
+            workCall = response.data;
+            initializeSocket();
+        } catch (err) {
+            error = err instanceof Error ? err.message : 'Failed to load work call details';
+        } finally {
+            isLoading = false;
+        }
     });
 
-    socket.on('disconnect', () => {
-      console.log('Disconnected from server');
-    });
+    // Socket initialization
+    function initializeSocket() {
+        if (!workCall) return;
 
-    return () => {
-      if (socket) socket.disconnect();
-    };
-  });
+        socket = io('http://localhost:9000', {
+            auth: {
+                token: localStorage.getItem('token'),
+                workCallId: workCall.id
+            },
+            reconnectionAttempts: 3,
+            timeout: 5000
+        });
 
-  const sendMessage = () => {
-    if (socket && inputMessage.trim()) {
-      console.log('Sending message:', inputMessage);
-      socket.emit('chatMessage', { message: inputMessage, token: localStorage.getItem('token'), workCallId: serviceProviderId });
-      inputMessage = '';
+        socket.on('connect', () => {
+            isConnected = true;
+            console.log('Connected with ID:', socket?.id);
+        });
+
+        socket.on('newMessage', (message: SocketMessage) => {
+            if (!workCall) return;
+            
+            const newMessage: Message = {
+                id: crypto.randomUUID(),
+                sender: message.senderId === user.id ? 'consumer' : 'provider',
+                text: message.content,
+                time: new Date(message.timestamp).toLocaleTimeString()
+            };
+
+            workCall.messages = [...workCall.messages, newMessage];
+        });
+
+        socket.on('disconnect', () => {
+            isConnected = false;
+        });
+
+        socket.on('error', (err) => {
+            console.error('Socket error:', err);
+        });
+
+        return () => {
+            if (socket) {
+                socket.disconnect();
+            }
+        };
     }
-  };
+
+    // Message sending
+    const sendMessage = () => {
+        if (!inputMessage.trim() || !socket || !workCall) return;
+        
+        isSubmitting = true;
+        
+        const messageData = {
+            content: inputMessage,
+            workCallId: workCall.id,
+            timestamp: new Date().toISOString(),
+            token: localStorage.getItem('token')
+        };
+        workCall.messages = [ messageData];
+        console.log(messageData, 'messageData===================................>>>>>>>>>>>>>>>..');
+
+        socket.emit('chatMessage', messageData, (ack: { success: boolean }) => {
+            isSubmitting = false;
+            if (ack?.success) {
+                inputMessage = '';
+            } else {
+                error = 'Failed to send message';
+            }
+        });
+    };
+
+    // Request actions
+    const handleAccept = async () => {
+        isSubmitting = true;
+        try {
+            await freelanceAxios.patch(`/work-call/${id}/accept`);
+            if (workCall) workCall.status = 'accepted';
+        } catch (err) {
+            error = err instanceof Error ? err.message : 'Failed to accept request';
+        } finally {
+            isSubmitting = false;
+        }
+    };
+
+    const handleReject = async () => {
+        isSubmitting = true;
+        try {
+            await freelanceAxios.patch(`/work-call/${id}/reject`);
+            if (workCall) workCall.status = 'rejected';
+        } catch (err) {
+            error = err instanceof Error ? err.message : 'Failed to reject request';
+        } finally {
+            isSubmitting = false;
+        }
+    };
 </script>
-  
+
+<!-- UI remains the same as your original template -->
 {#if isLoading}
     <div class="flex justify-center items-center min-h-screen">
         <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-600"></div>
@@ -217,7 +184,7 @@
     </div>
 {:else if workCall}
     <div class={`max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden border ${colorClasses.border} mt-10 mb-10`}>
-        <!-- Header Section with dynamic gradient -->
+        <!-- Header Section -->
         <div class={`bg-gradient-to-r ${colorClasses.gradientFrom} ${colorClasses.gradientTo} p-6 text-white`}>
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
@@ -227,16 +194,14 @@
                             src={workCall.consumerAvatar} 
                             alt={workCall.fromName}
                         />
-                        {#if workCall?.isOnline}
-                            <div class="absolute bottom-0 right-0 w-4 h-4 bg-green-400 rounded-full border-2 border-white"></div>
-                        {/if}
+                        <div class={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${isConnected ? 'bg-green-400' : 'bg-gray-400'}`}></div>
                     </div>
                     <div>
-                        <h1 class="text-2xl font-bold">{user?.name}</h1>
+                        <h1 class="text-2xl font-bold">{user.name}</h1>
                         <div class="flex items-center space-x-2">
-                            <span class="text-opacity-80">📞 {user?.phone}</span>
-                            {#if user?.email}
-                                <span class="text-opacity-80">✉️ {user?.email}</span>
+                            <span class="text-opacity-80">📞 {user.phone}</span>
+                            {#if user.email}
+                                <span class="text-opacity-80">✉️ {user.email}</span>
                             {/if}
                         </div>
                     </div>
@@ -248,7 +213,9 @@
             </div>
         </div>
 
-        <!-- Service Request Details -->
+        <!-- Rest of your template remains the same -->
+        <!-- ... -->
+          <!-- Service Request Details -->
         <div class={`p-6 border-b ${colorClasses.border}`}>
             <h2 class="text-xl font-bold text-gray-800 mb-4">Service Request</h2>
             

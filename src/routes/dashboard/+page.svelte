@@ -10,21 +10,28 @@
   import hairDresserImg from "./hairdresser.png";
   import { browser } from "$app/environment";
   import { freelanceAxios } from "$lib/action/axios.service";
-  let serviceProviders: any = $state();
+  let serviceProviders: any = $state([]);
   let showPost = $state(true);
 
   let selectedItem: any;
   let userDetail: any = $state();
   let location = $state("");
 
-  let services: any = $state();
+  let services: any = $state([]);
 
   onMount(async () => {
     if (browser) {
       userDetail = JSON.parse(localStorage.getItem("userDetail") || "{}");
+      if(!userDetail?.role.includes("SERVICE_PROVIDER")) showPost = false;
     }
-    const response = await freelanceAxios.get("/post-list");
-    services = response.data;
+    if(!userDetail?.role.includes("SERVICE_PROVIDER")){
+      const response = await freelanceAxios.get("/service-provider-list");
+      serviceProviders = response.data;
+    }else{
+      const response = await freelanceAxios.get("/post-list");
+      services = response.data;
+    }
+    
   });
 
   let showSuggestions = $state(true);
@@ -246,10 +253,12 @@
   };
 
   const filterLocation = async (location: string) => {
-    if(viewAllPosts){
+    if(showPost){
       const response = await freelanceAxios.get(`/post-list?address=${location}&category=${userDetail?.category}`);
-    }else if(!viewAllPosts){
-      const response = await freelanceAxios.get(`/post-list?address=${location}&category=${userDetail?.category}`);
+      services = response.data;
+    }else if(!showPost){
+      const response = await freelanceAxios.get(`/service-provider-list?address=${location}&category=${userDetail?.category}`);
+      serviceProviders = response.data;
     }
 
     
@@ -338,7 +347,7 @@
 
     <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
       {console.log(services, "services")}
-      {#if viewAllPosts && userDetail?.role.includes("SERVICE_PROVIDER") && showPost}
+      {#if showPost && userDetail?.role.includes("SERVICE_PROVIDER") && showPost}
         {#if services?.length === 0 || services?.length === undefined}
           <div>
             <p>No services found for {userDetail.category}</p>
