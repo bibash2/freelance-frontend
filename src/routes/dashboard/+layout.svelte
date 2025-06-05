@@ -47,7 +47,7 @@
   
   // Sample user data
   let user = browser ? JSON.parse(localStorage.getItem("userDetail") || "{}") : {};
-  
+  let userDetail = browser ? JSON.parse(localStorage.getItem("userDetail") || "{}") : {};
   // Editable fields
   let editableUser = {
     name: user.name,
@@ -73,6 +73,8 @@
     user.phone = editableUser.phone;
     editProfileModalOpen = false;
   }
+
+ 
 </script>
 
 <nav class="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
@@ -126,23 +128,34 @@
                 <div class="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
                   Signed in as <span class="font-medium">{user.email}</span>
                 </div>
-                <a 
-                  href="/dashboard/profile" 
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Your Profile
-                </a>
+                <div></div>
                 <button 
                   on:click={() => { editProfileModalOpen = true; profileDropdownOpen = false; }}
                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Edit Profile
                 </button>
+                {#if !userDetail?.role.includes("SERVICE_PROVIDER")}
                 <button 
                   on:click={() => { goto('/form/registerServiceProvider') }}
                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Register As Service Provider
+                </button>
+                {/if}
+                <button 
+                  on:click={() => { goto('/form/registerServiceProvider') }}
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Location: {userDetail?.userAddress}
+                  {#if userDetail?.role.includes("SERVICE_PROVIDER")}
+                    <button 
+                      on:click={() => { goto('/form/registerServiceProvider') }}
+                      class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      service provider: {userDetail?.serviceProviderAddress}
+                    </button>
+                  {/if}
                 </button>
                 <button 
                   on:click={() => handleLogout()} 
