@@ -57,7 +57,7 @@
       <!-- Avatar with status indicator -->
       <div class="relative flex-shrink-0">
         <img
-          src={user.avatar}
+          src={user.image}
           alt={user.name}
           class="w-14 h-14 rounded-full border-2 border-white shadow-md object-cover"
         />
@@ -89,14 +89,6 @@
   
         <!-- Contact info -->
         <div class="space-y-2">
-          <div class="flex items-center gap-2 text-sm">
-            <div class={`w-6 h-6 rounded-full ${colorClasses.bg} flex items-center justify-center ${colorClasses.text}`}>
-              📞
-            </div>
-            <a href={`tel:${user.serviceProviderContact}`} class={`text-gray-700 hover:${colorClasses.text} hover:underline`}>
-              {user.serviceProviderContact}
-            </a>
-          </div>
           
           {#if user.email}
             <div class="flex items-center gap-2 text-sm">

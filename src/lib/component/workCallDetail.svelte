@@ -1,4 +1,3 @@
-// FIXED CLIENT-SIDE SOCKET IMPLEMENTATION (Svelte Component)
 <script lang="ts">
     import { io, type Socket } from 'socket.io-client';
     import { onMount, onDestroy } from 'svelte';
@@ -36,6 +35,8 @@
         date: string;
         address: string;
         budget?: string;
+        image?:String;
+        dateTime?:string
     }
 
     // Component state
@@ -366,7 +367,7 @@
                     <div class="relative">
                         <img 
                             class="w-16 h-16 rounded-full border-4 border-white/30 object-cover" 
-                            src={workCall.consumerAvatar} 
+                            src={workCall.image} 
                             alt={workCall.fromName}
                         />
                         <div class={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${isConnected ? 'bg-green-400' : 'bg-red-400'}`}></div>
@@ -408,7 +409,7 @@
                         </div>
                         <div>
                             <div class="font-medium">Date & Time</div>
-                            <div class="text-gray-600">{workCall.date}</div>
+                            <div class="text-gray-600">{workCall.dateTime}</div>
                         </div>
                     </div>
                     
@@ -491,6 +492,7 @@
             
             <!-- IMPROVED MESSAGE INPUT -->
             <div class="mt-6">
+                {#if workCall.status === 'pending'}
                 <div class="flex items-end space-x-2">
                     <div class="flex-1">
                         <textarea
@@ -520,7 +522,7 @@
                         {isSubmitting ? '...' : 'Send'}
                     </button>
                 </div>
-                
+                {/if}
                 {#if !isConnected}
                     <div class="text-sm text-red-500 mt-2">
                         ⚠️ Connection lost. Trying to reconnect...
@@ -530,22 +532,33 @@
         </div>
 
         <!-- Action Buttons (unchanged) -->
-        {#if workCall.status === 'pending'}
+        {#if workCall.status === 'pending' }
             <div class="p-6 flex justify-end space-x-4">
-                <button
-                    on:click={handleReject}
-                    disabled={isSubmitting}
+                {#if type === 'requestedByMe'}
+                    <button
+                        on:click={handleReject}
+                        disabled={isSubmitting}
                     class={`px-6 py-2 border ${type === 'requestedByMe' ? 'border-green-600 text-green-600 hover:bg-green-50' : 'border-red-600 text-red-600 hover:bg-red-50'} rounded-lg transition ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     {isSubmitting ? 'Processing...' : 'Reject'}
                 </button>
+                {:else}
                 <button
                     on:click={handleAccept}
                     disabled={isSubmitting}
-                    class={`px-6 py-2 ${type === 'requestedByMe' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white rounded-lg transition ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    class={`px-6 py-2 ${type === 'requestedByMe' ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700'} text-white rounded-lg transition ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     {isSubmitting ? 'Processing...' : 'Accept'}
                 </button>
+
+                   <button
+                    on:click={handleReject}
+                    disabled={isSubmitting}
+                    class={`px-6 py-2 ${type === 'requestedByMe' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'} text-white rounded-lg transition ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                    {isSubmitting ? 'Processing...' : 'Reject'}
+                </button>
+                {/if}
             </div>
         {:else}
             <div class="p-6 bg-gray-50">

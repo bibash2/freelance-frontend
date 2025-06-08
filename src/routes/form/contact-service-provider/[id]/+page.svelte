@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/stores';
     import { freelanceAxios } from '$lib/action/axios.service';
+    import { error } from '@sveltejs/kit';
   
     let title = '';
     let description = '';
@@ -34,11 +35,20 @@
         address: location
         
       };
-      const response = await freelanceAxios.post("/contact-service-provider", formData);
+      try{
+   const response:any = await freelanceAxios.post("/contact-service-provider", formData);
+   if (response?.data?.statusCode === 500) {
+    alert(response.data.message || "Something went wrong.");
+    return;
+  }
       if(response?.data){
         workCallId = response?.data?.id;
-        goto(`/dashboard/workRequest/${workCallId}_requestedByMe`);
+        goto(`/dashboard/workRequest`);
       }
+      }catch(err:any){
+        console.log(err)
+      }
+   
     };
 
     const fetchLocationRecommendations = async (location: string) => {

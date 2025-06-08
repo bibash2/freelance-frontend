@@ -26,6 +26,8 @@
         avatar: "/avatars/mike.jpg"
       }
     ];
+    
+
   
     // Action handlers
     function approveProvider(id: string) {

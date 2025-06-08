@@ -8,6 +8,7 @@
     export let id: number;
     export let serviceProviderAddress: string;
     export let distance: number;
+    export let image:any;
     const dispatch = createEventDispatcher();
 
     const handleClick = () => {
@@ -18,7 +19,7 @@
         serviceProviderAddress,
         phone,
         bio,
-        profileImage,
+        image,
         distance
       });
     };
@@ -28,7 +29,7 @@
   on:click={handleClick}>
     <div class="flex items-center space-x-4 mb-4">
       <img
-        src={profileImage}
+        src={image}
         alt={name}
         class="w-16 h-16 rounded-full border-2 border-red-600 object-cover"
       />
