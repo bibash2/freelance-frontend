@@ -35,8 +35,8 @@
         date: string;
         address: string;
         budget?: string;
-        image?:String;
-        dateTime?:string
+        image?: string;
+        dateTime?: string
     }
 
     // Component state
@@ -228,7 +228,7 @@
             {console.log(ack,"Received acknowledgment")}
             isSubmitting = false;
             
-            if (ack?.success) {
+            if (ack?.success && workCall) {
                 // Clear input only after successful acknowledgment
                 inputMessage = '';
                 
@@ -241,7 +241,7 @@
                     );
                 }
                 console.log('Message sent successfully');
-            } else {
+            } else if (workCall) {
                 // Remove temporary message on failure
                 workCall.messages = workCall.messages.filter(m => m.id !== tempMessage.id);
                 error = ack?.error || 'Failed to send message';
@@ -257,7 +257,7 @@
         });
 
         // Stop typing indicator
-        if (isTyping) {
+        if (isTyping && socket && workCall) {
             isTyping = false;
             socket.emit('typing', { workCallId: workCall.id, isTyping: false });
         }
@@ -272,7 +272,7 @@
             
             // Stop typing indicator after 3 seconds of inactivity
             setTimeout(() => {
-                if (isTyping) {
+                if (isTyping && socket && workCall) {
                     isTyping = false;
                     socket.emit('typing', { workCallId: workCall.id, isTyping: false });
                 }

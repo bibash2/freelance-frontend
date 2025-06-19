@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   const props = $props()
-  const { id, title, description, price, imageUrl, userId, distance, address, image} = props;
+  const { id, title, description, price, imageUrl, userId, distance, address, video} = props;
   const dispatch = createEventDispatcher();
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
@@ -18,11 +18,11 @@ const handleClick = () => {
     title,
     description,
     price,
-    imageUrl,
+    video,
     userId,
     distance,
     address, 
-    image
+    
   });
 };
 console.log(userId,"userId", currentUserId, "currentUserId")
@@ -38,7 +38,7 @@ onclick={handleClick}
   class="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-lg transform hover:scale-[1.02] transition-all cursor-pointer overflow-hidden"
 >
   <!-- Image -->
-  <img class="w-full h-44 object-cover" src={image} alt={title} />
+  <video class="w-full h-44 object-cover" src={video}  />
 
   <!-- Content -->
   <div class="p-4 space-y-3">

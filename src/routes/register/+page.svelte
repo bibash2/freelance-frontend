@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { freelanceAxios } from "$lib/action/axios.service";
   import type { AxiosError } from "axios";
-
+  import { toast } from "$lib/utils/toast";
   let name: string = "";
   let email: string = "";
   let password: string = "";
@@ -14,7 +14,7 @@
   let file: File | null = null;
   let base64Image: string | null = null;
   let isLoading: boolean = false;
-  let errorMessage: string | null = null;
+  let errorMessage: string | any = null;
 
   const handleFileUpload = (event: Event) => {
     const target = event.target as HTMLInputElement;
@@ -26,10 +26,12 @@
       reader.onload = () => {
         base64Image = reader.result as string;
         console.log(base64Image, "base64Image")
+        toast.success("Image uploaded successfully!");
       };
       reader.onerror = (err) => {
         console.error('File reading error:', err);
         errorMessage = "Failed to process image";
+        toast.error(errorMessage);
       };
       reader.readAsDataURL(file);
     }
@@ -43,12 +45,14 @@
     if (password !== confirmPassword) {
       errorMessage = "Passwords don't match!";
       isLoading = false;
+      toast.error(errorMessage);
       return;
     }
 
     if (!file) {
       errorMessage = "Please upload an image";
       isLoading = false;
+      toast.error(errorMessage);
       return;
     }
 
@@ -69,6 +73,7 @@
       const axiosError = error as AxiosError;
       errorMessage = axiosError.response?.data?.message || "Registration failed. Please try again.";
       console.error("Registration error:", error);
+      toast.error(errorMessage);
     } finally {
       isLoading = false;
     }
